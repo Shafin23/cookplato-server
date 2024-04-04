@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const requestedBookingSchema = require("../schemas/RequestedBookingSchema");
+const requestedBookingSchema = require("../schemas/requestedBookingSchema");
 const RequestedBookingCollections = mongoose.model("requestedBookingCollections", requestedBookingSchema);
 
 //  getting all requested booking ---------------------------------------------

@@ -13,6 +13,8 @@ dotenv.config();
 // Load route handlers--------------------------------------------
 const getAllUsers = require("./routeHandlers/getAllusers");
 const getAllMessages = require("./routeHandlers/getAllMessages")
+const pendingBooking = require("./routeHandlers/pendingBooking")
+const confirmBooking = require("")
 // ================================================================
 
 
