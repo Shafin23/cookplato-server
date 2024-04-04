@@ -4,12 +4,10 @@ const mongoose = require("mongoose");
 const userSchema = require("../schemas/userSchema")
 const Users = new mongoose.model("userCollections", userSchema)
 
-// Get all cook's data -------------------------------------------
+// Get all cook's data --------------------------------------------------
 router.get("/", async (req, res) => {
     try {
-        //  collecting all user's from the database
         const users = await Users.find();
-        // const cooks = await users.filter(user=>user.userRole === "cook" )
         res.status(200).json(users);
     } catch (error) {
         console.error("Error fetching cooks:", error);
@@ -20,7 +18,7 @@ router.get("/", async (req, res) => {
 
 
 
-// Get all cook's data -------------------------------------------
+// Get all cook's data --------------------------------------------------------
 router.get("/cook", async (req, res) => {
     try {
         //  collecting all user's from the database
@@ -32,7 +30,7 @@ router.get("/cook", async (req, res) => {
         res.status(500).json({ error: "There was a server side error" });
     }
 })
-// =======================================================================
+// ============================================================================
 
 
 // get approved cook: when admin approve a cook -----------------------------
@@ -104,16 +102,14 @@ router.get("/userId/:id", async (req, res) => {
 
 // post user info ==============================================================
 router.post("/", async (req, res) => {
-    // console.log(req.body);
     const newUser = new Users(req.body)
-    // console.log(newUser)
     try {
         const newUser = new Users(req.body);
         await newUser.save();
         res.status(201).json({ message: "Cook added successfully", user: newUser });
     } catch (error) {
         console.error("Error adding cook:", error);
-        res.status(500).json({ error: "There was a server side error" });
+        res.status(500).json({ error: "There was a server side error", error });
     }
 })
 // ------------------------------------------------------------------------------
@@ -129,10 +125,10 @@ router.put("/:id", async (req, res) => {
     const user = await Users.findById(userId);
     const updatedDishes = await user.dishes;
     // console.log("this is the update thing", user.dishes)
-    
+
     try {
         // const user = await Users.findById(userId);
-        
+
         const updatedUser = await Users.findByIdAndUpdate(userId, { dishes: [...updatedDishes, updatedUserData] }, { new: true });
         if (!updatedUser) {
             return res.status(404).json({ error: "Cook not found" });
