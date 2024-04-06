@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
 })
 
 // upload message to the database -------------------------------------------------------------
-router.post("/addMessage", async (req, res) => {
+router.post("/", async (req, res) => {
     const newMessage = new Message(req.body)
     console.log(newMessage)
     try {

@@ -14,13 +14,13 @@ dotenv.config();
 const getAllUsers = require("./routeHandlers/getAllusers");
 const getAllMessages = require("./routeHandlers/getAllMessages")
 const pendingBooking = require("./routeHandlers/pendingBooking")
-const confirmBooking = require("")
+const confirmBooking = require("./routeHandlers/confirmBooking")
+const requestBooking = require("./routeHandlers/RequestedBooking")
 // ================================================================
 
-
-// common middlewares -----------------------------------
+// Common middlewares -----------------------------------
 app.use(cors()); // enable cors policy
-app.use(express.json()); // get data in json formate
+app.use(express.json()); // get data in json format
 // ======================================================
 
 // Database connection with mongoose ----------------------------------------
@@ -29,12 +29,13 @@ mongoose.connect("mongodb+srv://shafin90:1Mrbdn987@cluster0.yhuz2xd.mongodb.net/
   .catch(err => console.error("Error connecting to MongoDB:", err));
 // ========================================================================
 
-
 // Application's routes  ---------------------
 app.use("/getAllUsers", getAllUsers);
-app.use("/getAllMessages", getAllMessages);
+app.use("/getAllMessages", getAllMessages)
+app.use("/pendingBook", pendingBooking)
+app.use("/confirmBooking", confirmBooking)
+app.use("/requestBooking", requestBooking)
 // ===========================================
-
 
 // Handle Stripe payment----------------------------------------
 app.post("/create-payment-intent", async (req, res) => {
@@ -54,27 +55,23 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 // =============================================================
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Set the destination folder where files will be uploaded
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // Set the file name
+// Handle payout to worker's bank account
+app.post("/payout", async (req, res) => {
+  try {
+    const { amount, workerAccountId } = req.body;
+
+    // Create a payout to the worker's bank account
+    const payout = await stripe.transfers.create({
+      amount,
+      currency: 'usd', // Adjust currency as necessary
+      destination: workerAccountId, // Bank account ID of the worker
+    });
+
+    res.status(200).json({ success: true, payout });
+  } catch (error) {
+    console.error("Error creating payout:", error);
+    res.status(500).json({ error: "Failed to create payout" });
   }
-});
-
-
-// Initialize upload
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 100000000000000000000000000 } // Set file size limit if needed
-}).single('avatar'); // 'avatar' should match the name attribute of your file input
-
-
-app.post('/profile', (req, res) => {
-  upload(req, res, (err) => {
-    console.log("path name--------  ",req.file.path)
-  });
 });
 
 // checking whether the server is running or not ---------------

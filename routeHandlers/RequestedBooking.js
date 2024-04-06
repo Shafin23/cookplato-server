@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const requestedBookingSchema = require("../schemas/requestedBookingSchema");
+const requestedBookingSchema = require("../schemas/RequestedBookingSchema");
 const RequestedBookingCollections = mongoose.model("requestedBookingCollections", requestedBookingSchema);
 
 //  getting all requested booking ---------------------------------------------
-router.get("/", async (req, res) => {
+router.get("/:email", async (req, res) => {
     try {
-        const requestedBooking = await RequestedBookingCollections.find();
+        const email = await req.params.email;
+        const requestedBooking = await RequestedBookingCollections.find({email:email});
         res.status(200).json(requestedBooking);
     } catch (error) {
         console.log("the error to get requestedBooking is", error)
@@ -48,3 +49,5 @@ router.delete("/:id", async (req, res) => {
     }
 })
 // ========================================================================================================
+
+module.exports= router;

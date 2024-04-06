@@ -32,10 +32,9 @@ const userSchema = mongoose.Schema({
     display_name: {
         type: String,
     },
-    // img: {
-    //     data: Buffer, // Store image data as a buffer
-    //     contentType: String, // Store image content type
-    // },
+    img: {
+        type: String, // Store image as url
+    },
     description: {
         type: String,
     },
@@ -45,10 +44,9 @@ const userSchema = mongoose.Schema({
     status: {
         type: String,
     },
-    // dishImg:{
-    //     data: Buffer, // Store image data as a buffer
-    //     contentType: String, // Store image content type
-    // }
+    dishImg: {
+        type: String
+    }
 });
 
 module.exports = userSchema;

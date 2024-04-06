@@ -8,7 +8,7 @@ const ConfirmBooking = mongoose.model("confirmBookingCollections", confirmBookin
 //  getting all requested booking ---------------------------------------------
 router.get("/", async (req, res) => {
     try {
-        const confirmBooking = await ConfirmBooking.find();
+        const confirmBooking = await ConfirmBooking.find({email:email});
         res.status(200).json(confirmBooking);
     } catch (error) {
         console.log("the error to get confirmBooking is", error)
@@ -49,3 +49,5 @@ router.delete("/:id", async (req, res) => {
     }
 })
 // ========================================================================================================
+
+module.exports = router

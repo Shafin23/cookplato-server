@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const pendingBookingSchema = require("../schemas/pendingBookingSchema");
-const PendingBookingSchema = new mongoose.model("pendingBookingCollections", pendingBookingSchema);
+const PendingBooking = new mongoose.model("pendingBookingCollections", pendingBookingSchema);
 
 
 // getting all the data of pending booking ----------------------------------------
 router.get("/", async (req, res) => {
     try {
-        const pendingRequest = await PendingBookingSchema.find();
+        const pendingRequest = await PendingBooking.find({email:email});
         res.status(200).json(pendingRequest);
     } catch (error) {
         console.log("error while getting all the  data of pending request", error)
@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
 //  add a booking request --------------------------------------------------------------------------------
 router.post("/", async (req, res) => {
     try {
-        const newInPendingRequest = new PendingBookingSchema(req.body)
+        const newInPendingRequest = new PendingBooking(req.body)
         await newInPendingRequest.save();
         res.status(201).json({ message: "new pending request", newPendingRequest: newInPendingRequest })
     } catch (error) {
@@ -37,7 +37,7 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const pendingBookingId = req.params.id;
-        const deletedRequest = await PendingBookingCollections.findByIdAndDelete(pendingBookingId);
+        const deletedRequest = await PendingBooking.findByIdAndDelete(pendingBookingId);
         if (deletedRequest) {
             res.status(200).json({ message: "pending booking deleted successfully", deletedRequest })
         } else {
@@ -50,3 +50,5 @@ router.delete("/:id", async (req, res) => {
     }
 })
 // ========================================================================================================
+
+module.exports = router;
