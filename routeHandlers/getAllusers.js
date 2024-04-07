@@ -153,7 +153,6 @@ router.post('/submit', upload.single('img'), async (req, res) => {
             display_name: req.body.displayName,
             img: req.file ? '/uploads/' + req.file.filename : '', // Save image URL if uploaded
             description: req.body.description,
-            dishes: req.body.dishes ? req.body.dishes.split(',') : [], // Assuming dishes is a comma-separated string
             status: req.body.status
         });
 
@@ -171,30 +170,64 @@ router.post('/submit', upload.single('img'), async (req, res) => {
 
 
 // update the Cook's data when he/she is creating profile or updating information
-router.put("/:id", async (req, res) => {
+// temporary
+// router.put("/:id", async (req, res) => {
+//     const userId = req.params.id;
+//     const updatedUserData = req.body;
+//     console.log(userId)
+//     console.log(updatedUserData)
+
+//     const user = await Users.findById(userId);
+//     const updatedDishes = await user.dishes;
+//     // console.log("this is the update thing", user.dishes)
+
+//     try {
+//         // const user = await Users.findById(userId);
+
+//         const updatedUser = await Users.findByIdAndUpdate(userId, { dishes: [...updatedDishes, updatedUserData] }, { new: true });
+//         if (!updatedUser) {
+//             return res.status(404).json({ error: "Cook not found" });
+//         }
+//         res.status(200).json({ message: "Cook updated successfully", user: updatedUser });
+//     } catch (error) {
+//         console.error("Error updating cook:", error);
+//         res.status(500).json({ error: "There was a server side error" });
+//     }
+// });
+// ===================================================================================================
+
+
+
+// update the Cook's data when he/she is creating profile or updating information
+router.put("/:id", upload.array('images', 3), async (req, res) => {
     const userId = req.params.id;
     const updatedUserData = req.body;
-    console.log(userId)
-    console.log(updatedUserData)
-
-    const user = await Users.findById(userId);
-    const updatedDishes = await user.dishes;
-    // console.log("this is the update thing", user.dishes)
+    const images = req.files;
 
     try {
-        // const user = await Users.findById(userId);
+        // Get the user and their existing dishes
+        const user = await Users.findById(userId);
+        const updatedDishes = user.dishes;
 
-        const updatedUser = await Users.findByIdAndUpdate(userId, { dishes: [...updatedDishes, updatedUserData] }, { new: true });
+        // Convert file objects to URLs
+        const imageUrls = images.map(image => '/uploads/' + image.filename);
+
+        // Update the dishes with the new data and image URLs
+        const updatedUser = await Users.findByIdAndUpdate(userId, {
+            dishes: [...updatedDishes, { ...updatedUserData, images: imageUrls }]
+        }, { new: true });
+
         if (!updatedUser) {
             return res.status(404).json({ error: "Cook not found" });
         }
+
         res.status(200).json({ message: "Cook updated successfully", user: updatedUser });
     } catch (error) {
         console.error("Error updating cook:", error);
         res.status(500).json({ error: "There was a server side error" });
     }
 });
-// ===================================================================================================
+
 
 
 

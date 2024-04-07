@@ -6,7 +6,7 @@ const ConfirmBooking = mongoose.model("confirmBookingCollections", confirmBookin
 
 
 //  getting all requested booking ---------------------------------------------
-router.get("/", async (req, res) => {
+router.get("/:email", async (req, res) => {
     try {
         const confirmBooking = await ConfirmBooking.find({email:email});
         res.status(200).json(confirmBooking);

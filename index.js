@@ -32,7 +32,7 @@ mongoose.connect("mongodb+srv://shafin90:1Mrbdn987@cluster0.yhuz2xd.mongodb.net/
 // Application's routes  ---------------------
 app.use("/getAllUsers", getAllUsers);
 app.use("/getAllMessages", getAllMessages)
-app.use("/pendingBook", pendingBooking)
+app.use("/pendingBooking", pendingBooking)
 app.use("/confirmBooking", confirmBooking)
 app.use("/requestBooking", requestBooking)
 // ===========================================

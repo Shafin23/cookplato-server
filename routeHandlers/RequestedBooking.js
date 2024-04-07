@@ -18,6 +18,20 @@ router.get("/:email", async (req, res) => {
 // =============================================================================
 
 
+
+router.get("/", async (req, res) => {
+    try {
+        const requestBooking = await  RequestedBookingCollections.find();
+        res.status(200).json(requestBooking);
+    } catch (error) {
+        console.log("error while getting all the  data of pending request", error)
+        res.status(500).json({ message: "There was a server side problem" })
+    }
+})
+
+
+
+
 // add a new booking request by user --------------------------------------------
 router.post("/", async (req, res) => {
     try {
