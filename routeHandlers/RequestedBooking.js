@@ -35,6 +35,7 @@ router.get("/", async (req, res) => {
 // add a new booking request by user --------------------------------------------
 router.post("/", async (req, res) => {
     try {
+      
         const newBookingRequest = new RequestedBookingCollections(req.body);
         await newBookingRequest.save();
         res.status(201).json({ message: "request for booking successfull", newRequest: newBookingRequest })
