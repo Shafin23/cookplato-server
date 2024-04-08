@@ -24,6 +24,12 @@ const soldDishes = require("./routeHandlers/soldDish");
 app.use(cors()); // enable cors policy
 app.use(express.json()); // get data in json format
 app.use(bodyParser.json());
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // ======================================================
 
 // Database connection with mongoose ----------------------------------------
