@@ -17,11 +17,13 @@ const getAllMessages = require("./routeHandlers/getAllMessages")
 const pendingBooking = require("./routeHandlers/pendingBooking")
 const confirmBooking = require("./routeHandlers/confirmBooking")
 const requestBooking = require("./routeHandlers/RequestedBooking")
+const soldDishes = require("./routeHandlers/soldDish");
 // ================================================================
 
 // Common middlewares -----------------------------------
 app.use(cors()); // enable cors policy
 app.use(express.json()); // get data in json format
+app.use(bodyParser.json());
 // ======================================================
 
 // Database connection with mongoose ----------------------------------------
@@ -36,7 +38,7 @@ app.use("/getAllMessages", getAllMessages)
 app.use("/pendingBooking", pendingBooking)
 app.use("/confirmBooking", confirmBooking)
 app.use("/requestBooking", requestBooking)
-app.use(bodyParser.json());
+app.use("/soldDishes", soldDishes);
 // ===========================================
 
 // Handle Stripe payment----------------------------------------

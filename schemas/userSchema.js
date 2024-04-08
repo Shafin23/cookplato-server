@@ -46,7 +46,14 @@ const userSchema = mongoose.Schema({
     },
     dishImg: {
         type: String
+    },
+    incomeAsCook:{
+        type: String
+    },
+    costAsCustomer : {
+        type: String
     }
+
 });
 
 module.exports = userSchema;
