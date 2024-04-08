@@ -26,11 +26,11 @@ app.use(express.json()); // get data in json format
 app.use(bodyParser.json());
 // ======================================================
 
-// // Database connection with mongoose ----------------------------------------
-// mongoose.connect("mongodb+srv://shafin90:1Mrbdn987@cluster0.yhuz2xd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/Cookplato")
-//   .then(() => console.log("Connection to MongoDB established"))
-//   .catch(err => console.error("Error connecting to MongoDB:", err));
-// // ========================================================================
+// Database connection with mongoose ----------------------------------------
+mongoose.connect("mongodb+srv://shafin90:1Mrbdn987@cluster0.yhuz2xd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/Cookplato")
+  .then(() => console.log("Connection to MongoDB established"))
+  .catch(err => console.error("Error connecting to MongoDB:", err));
+// ========================================================================
 
 // Application's routes  ---------------------
 app.use("/getAllUsers", getAllUsers);

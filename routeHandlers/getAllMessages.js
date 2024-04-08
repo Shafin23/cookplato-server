@@ -1,43 +1,34 @@
-const express = require("express");
-const router = express.Router();
-const { MongoClient } = require("mongodb");
+const express = require("express"); 
+const router = express.Router(); 
+const mongoose = require("mongoose"); 
+const messageSchema = require("../schemas/messageSchema")
+const Message = new mongoose.model("messageCollection", messageSchema)
 
-// MongoDB Connection URI
-const uri = "mongodb+srv://shafin:bqIoXvqlvI3a6vBn@cluster0.yhuz2xd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";  // Replace this with your MongoDB URI
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Connect to MongoDB
-async function connect() {
-    try {
-        await client.connect();
-        console.log("Connected to MongoDB");
-    } catch (err) {
-        console.error("Error connecting to MongoDB:", err);
-    }
-}
-connect();
-
-// Get all messages that have been sent to Cook ----------------------------------------------
+// Get all messages that has been send to Cook ----------------------------------------------
 router.get("/", async (req, res) => {
     try {
-        const messages = await client.db("Cookplato").collection("message").find().toArray();
-        res.status(200).json(messages);
-    } catch (error) {
-        console.log("Error while fetching the messages:", error);
-        res.status(500).json({ error: "There was a server side error" });
+        const message = await Message.find();
+        res.status(200).json(message)
     }
-});
+    catch (error) {
+        console.log("eeror while fetching the messages", error)
+        res.status(500).json({ error: "janina ki hoise" })
+    }
+})
 
-// Upload message to the database -------------------------------------------------------------
+// upload message to the database -------------------------------------------------------------
 router.post("/", async (req, res) => {
+    const newMessage = new Message(req.body)
+    console.log(newMessage)
     try {
-        const newMessage = req.body;
-        await client.db("Cookplato").collection("message").insertOne(newMessage);
-        res.status(201).json({ message: "Message added successfully", newMessage });
+        const newMessage = new Message(req.body);
+        await newMessage.save();
+        res.status(201).json({ message: "Cook added successfully", message: newMessage });
     } catch (error) {
         console.error("Error adding message:", error);
         res.status(500).json({ error: "There was a server side error" });
     }
-});
+})
 
 module.exports = router;

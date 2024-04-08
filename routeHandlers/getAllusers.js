@@ -1,26 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { MongoClient, ObjectId } = require("mongodb");
+const mongoose = require("mongoose");
+const userSchema = require("../schemas/userSchema");
+const Users = new mongoose.model("userCollections", userSchema);
 
-// MongoDB Connection URI
-const uri = "mongodb+srv://shafin:bqIoXvqlvI3a6vBn@cluster0.yhuz2xd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Change this to your MongoDB URI
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Connect to MongoDB
-async function connect() {
-    try {
-        await client.connect();
-        console.log("Connected to MongoDB");
-    } catch (err) {
-        console.error("Error connecting to MongoDB:", err);
-    }
-}
-connect();
 
 // Get all user's data --------------------------------------------------
 router.get("/", async (req, res) => {
     try {
-        const users = await client.db("Cookplato").collection("users").find().toArray();
+        const users = await Users.find();
         res.status(200).json(users);
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -32,7 +20,7 @@ router.get("/", async (req, res) => {
 // Get all cook's data --------------------------------------------------------
 router.get("/cook", async (req, res) => {
     try {
-        const cooks = await client.db("Cookplato").collection("users").find({ userRole: "cook" }).toArray();
+        const cooks = await Users.find({ userRole: "cook" });
         res.status(200).json(cooks);
     } catch (error) {
         console.error("Error fetching cooks:", error);
@@ -44,7 +32,7 @@ router.get("/cook", async (req, res) => {
 // Get approved cooks --------------------------------------------------------
 router.get("/approvedCook", async (req, res) => {
     try {
-        const approvedCooks = await client.db("Cookplato").collection("users").find({ status: "approved" }).toArray();
+        const approvedCooks = await Users.find({ status: "approved" });
         res.status(200).json(approvedCooks);
     } catch (error) {
         console.error("Error fetching approved cooks:", error);
@@ -56,7 +44,7 @@ router.get("/approvedCook", async (req, res) => {
 // Get pending cooks ---------------------------------------------------------
 router.get("/pendingCook", async (req, res) => {
     try {
-        const pendingCooks = await client.db("Cookplato").collection("users").find({ status: "pending" }).toArray();
+        const pendingCooks = await Users.find({ status: "pending" });
         res.status(200).json(pendingCooks);
     } catch (error) {
         console.error("Error fetching pending cooks:", error);
@@ -68,7 +56,7 @@ router.get("/pendingCook", async (req, res) => {
 // Get all dish items' information -------------------------------------------
 router.get("/dishes", async (req, res) => {
     try {
-        const allDishes = await client.db("Cookplato").collection("users").distinct('dishes', { dishes: { $exists: true, $ne: null } });
+        const allDishes = await Users.distinct('dishes', { dishes: { $exists: true, $ne: null } });
         res.status(200).json(allDishes);
     } catch (error) {
         console.error("Error fetching dishes:", error);
@@ -81,7 +69,7 @@ router.get("/dishes", async (req, res) => {
 router.get("/email/:email", async (req, res) => {
     const userEmail = req.params.email;
     try {
-        const user = await client.db("Cookplato").collection("users").findOne({ email: userEmail });
+        const user = await Users.findOne({ email: userEmail });
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -97,7 +85,7 @@ router.get("/email/:email", async (req, res) => {
 router.get("/userId/:id", async (req, res) => {
     const userId = req.params.id;
     try {
-        const user = await client.db("Cookplato").collection("users").findOne({ _id: ObjectId(userId) });
+        const user = await Users.findById(userId);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -112,7 +100,8 @@ router.get("/userId/:id", async (req, res) => {
 // Create new user -----------------------------------------------------------
 router.post('/submit', async (req, res) => {
     try {
-        await client.db("Cookplato").collection("users").insertOne(req.body);
+        const newUser = new Users(req.body);
+        await newUser.save();
         res.status(200).send('User created successfully');
     } catch (error) {
         console.error('Error creating user:', error);
@@ -125,15 +114,11 @@ router.post('/submit', async (req, res) => {
 router.put("/:id", async (req, res) => {
     const userId = req.params.id;
     try {
-        const updatedUser = await client.db("Cookplato").collection("users").findOneAndUpdate(
-            { _id: ObjectId(userId) },
-            { $set: req.body },
-            { returnOriginal: false }
-        );
-        if (!updatedUser.value) {
+        const updatedUser = await Users.findByIdAndUpdate(userId, req.body, { new: true });
+        if (!updatedUser) {
             return res.status(404).json({ error: "User not found" });
         }
-        res.status(200).json({ message: "User updated successfully", user: updatedUser.value });
+        res.status(200).json({ message: "User updated successfully", user: updatedUser });
     } catch (error) {
         console.error("Error updating user:", error);
         res.status(500).json({ error: "There was a server side error" });
@@ -146,15 +131,11 @@ router.put("/updateStatus/:id", async (req, res) => {
     const userId = req.params.id;
     const updatedStatus = req.body.status;
     try {
-        const updatedUser = await client.db("Cookplato").collection("users").findOneAndUpdate(
-            { _id: ObjectId(userId) },
-            { $set: { status: updatedStatus } },
-            { returnOriginal: false }
-        );
-        if (!updatedUser.value) {
+        const updatedUser = await Users.findByIdAndUpdate(userId, { status: updatedStatus }, { new: true });
+        if (!updatedUser) {
             return res.status(404).json({ error: "User not found" });
         }
-        res.status(200).json({ message: "User status updated successfully", user: updatedUser.value });
+        res.status(200).json({ message: "User status updated successfully", user: updatedUser });
     } catch (error) {
         console.error("Error updating user status:", error);
         res.status(500).json({ error: "There was a server side error" });
