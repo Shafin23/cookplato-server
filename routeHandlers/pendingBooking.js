@@ -8,6 +8,7 @@ const PendingBooking = new mongoose.model("pendingBookingCollections", pendingBo
 // getting specific data of pending booking ----------------------------------------
 router.get("/:email", async (req, res) => {
     try {
+        const email =  req.params.email;
         const pendingRequest = await PendingBooking.find({email:email});
         res.status(200).json(pendingRequest);
     } catch (error) {

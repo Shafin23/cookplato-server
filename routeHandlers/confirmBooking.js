@@ -8,6 +8,7 @@ const ConfirmBooking = mongoose.model("confirmBookingCollections", confirmBookin
 //  getting all requested booking ---------------------------------------------
 router.get("/:email", async (req, res) => {
     try {
+        const email = req.params.email;
         const confirmBooking = await ConfirmBooking.find({email:email});
         res.status(200).json(confirmBooking);
     } catch (error) {
@@ -16,6 +17,21 @@ router.get("/:email", async (req, res) => {
     }
 })
 // =============================================================================
+
+
+
+//  getting all requested booking ---------------------------------------------
+router.get("/", async (req, res) => {
+    try {
+        const confirmBooking = await ConfirmBooking.find();
+        res.status(200).json(confirmBooking);
+    } catch (error) {
+        console.log("the error to get confirmBooking is", error)
+        res.status(500).json({ error: "There was a server side error" })
+    }
+})
+// =============================================================================
+
 
 
 // add a new booking request by user --------------------------------------------

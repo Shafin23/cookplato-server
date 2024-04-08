@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 const messageSchema = mongoose.Schema({
     senderEmail: {
         type: String,
-        required: true
+        
     },
     receiverEmail: {
         type: String ,
-        required: true
+        
     },
     message: {
         type: String, 

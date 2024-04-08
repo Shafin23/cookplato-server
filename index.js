@@ -5,6 +5,7 @@ const cors = require('cors');
 const multer = require('multer')
 const app = express();
 const path = require('path');
+const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;
 const stripe = require('stripe')("sk_test_51OY48pCg3UF6njdMIGMex9SQFX49Hl36mb8yI20UV3M5HtIj3meONK8fF2YAaSp98DHENkED2aPt3JuI9Ypd7oXI00qqrB0fF5");
 
@@ -35,6 +36,7 @@ app.use("/getAllMessages", getAllMessages)
 app.use("/pendingBooking", pendingBooking)
 app.use("/confirmBooking", confirmBooking)
 app.use("/requestBooking", requestBooking)
+app.use(bodyParser.json());
 // ===========================================
 
 // Handle Stripe payment----------------------------------------
@@ -55,16 +57,16 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 // =============================================================
 
-// Handle payout to worker's bank account
-app.post("/payout", async (req, res) => {
+// Handle payout request from worker
+app.post("/request-payout", async (req, res) => {
   try {
-    const { amount, workerAccountId } = req.body;
+    const { amount } = req.body;
 
     // Create a payout to the worker's bank account
     const payout = await stripe.transfers.create({
       amount,
       currency: 'usd', // Adjust currency as necessary
-      destination: workerAccountId, // Bank account ID of the worker
+      destination: 69207711, // Replace with Payoneer account ID
     });
 
     res.status(200).json({ success: true, payout });
@@ -73,6 +75,29 @@ app.post("/payout", async (req, res) => {
     res.status(500).json({ error: "Failed to create payout" });
   }
 });
+
+
+
+app.post('/charge', async (req, res) => {
+  try {
+    const paymentMethodId = req.body.paymentMethodId;
+
+    // Create a Payment Intent with a return URL
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 1000, // amount in cents
+      currency: 'usd',
+      payment_method: paymentMethodId,
+      confirm: true,
+      return_url: 'https://yourwebsite.com/success', // Your success page URL
+    });
+
+    res.status(200).json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while processing your payment.' });
+  }
+});
+
 
 // checking whether the server is running or not ---------------
 app.get("/", (req, res) => {

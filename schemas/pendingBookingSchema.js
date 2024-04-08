@@ -13,7 +13,6 @@ const pendingBookingSchema = mongoose.Schema({
     dishImg: String,
     name: String,
     category: String
-
 })
 
 
