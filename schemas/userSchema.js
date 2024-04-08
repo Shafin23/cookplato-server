@@ -52,6 +52,9 @@ const userSchema = mongoose.Schema({
     },
     costAsCustomer : {
         type: String
+    },
+    rating:{
+        type: Number
     }
 
 });
