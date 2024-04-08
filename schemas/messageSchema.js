@@ -13,6 +13,9 @@ const messageSchema = mongoose.Schema({
         type: String, 
         required: true
     },
+    senderName: {
+        type: String
+    },
     time: {
         hours: {
             type: Number,
@@ -23,6 +26,8 @@ const messageSchema = mongoose.Schema({
             required: true
         }
     }
+    
+    
 });
 
 module.exports = messageSchema;
