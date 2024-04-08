@@ -12,7 +12,10 @@ const confirmBookingSchema = mongoose.Schema({
     counter: Number,
     dishImg: String,
     name: String,
-    category: String
+    category: String, 
+    date: Date, 
+    customerEmail: String,
+    cookEmail: String
 })
 
 
