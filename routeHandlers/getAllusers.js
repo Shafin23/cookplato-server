@@ -5,27 +5,6 @@ const userSchema = require("../schemas/userSchema");
 const Users = new mongoose.model("userCollections", userSchema);
 
 
-
-
-// mongoose.connection.on('open', async () => {
-//     try {
-//         // Check if the Users collection already exists
-//         const collectionNames = await mongoose.connection.db.listCollections().toArray();
-//         const collectionExists = collectionNames.some(collection => collection.name === 'userCollections');
-
-//         // If the collection doesn't exist, create it
-//         if (!collectionExists) {
-//             await mongoose.connection.db.createCollection('userCollections');
-//             console.log('Users collection created successfully');
-//         }
-//     } catch (error) {
-//         console.error('Error creating Users collection:', error);
-//     }
-// });
-
-
-
-
 // Get all user's data --------------------------------------------------
 router.get("/", async (req, res) => {
     try {
