@@ -1,68 +1,71 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
-const requestedBookingSchema = require("../schemas/RequestedBookingSchema");
-const RequestedBookingCollections = mongoose.model("requestedBookingCollections", requestedBookingSchema);
+const { MongoClient, ObjectId } = require("mongodb");
 
-//  getting all requested booking ---------------------------------------------
+// MongoDB Connection URI
+const uri = "mongodb+srv://shafin:bqIoXvqlvI3a6vBn@cluster0.yhuz2xd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Replace this with your MongoDB URI
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Connect to MongoDB
+async function connect() {
+    try {
+        await client.connect();
+        console.log("Connected to MongoDB");
+    } catch (err) {
+        console.error("Error connecting to MongoDB:", err);
+    }
+}
+connect();
+
+// Getting all requested booking by email
 router.get("/:email", async (req, res) => {
     try {
-        const email = await req.params.email;
-        const requestedBooking = await RequestedBookingCollections.find({email:email});
+        const email = req.params.email;
+        const requestedBooking = await client.db("Cookplato").collection("requestedBooking").find({ email: email }).toArray();
         res.status(200).json(requestedBooking);
     } catch (error) {
-        console.log("the error to get requestedBooking is", error)
-        res.status(500).json({ error: "There was a server side error" })
+        console.log("Error fetching requested booking:", error);
+        res.status(500).json({ error: "There was a server side error" });
     }
-})
-// =============================================================================
+});
 
-
-
+// Getting all requested booking
 router.get("/", async (req, res) => {
     try {
-        const requestBooking = await  RequestedBookingCollections.find();
+        const requestBooking = await client.db("Cookplato").collection("requestedBooking").find().toArray();
         res.status(200).json(requestBooking);
     } catch (error) {
-        console.log("error while getting all the  data of pending request", error)
-        res.status(500).json({ message: "There was a server side problem" })
+        console.log("Error fetching all requested booking data:", error);
+        res.status(500).json({ message: "There was a server side problem" });
     }
-})
+});
 
-
-
-
-// add a new booking request by user --------------------------------------------
+// Add a new booking request by user
 router.post("/", async (req, res) => {
     try {
-      
-        const newBookingRequest = new RequestedBookingCollections(req.body);
-        await newBookingRequest.save();
-        res.status(201).json({ message: "request for booking successfull", newRequest: newBookingRequest })
-    } catch (err) {
-        console.log("Error while adding booking equest is", err)
-        res.status(500).json({ error: "There was a server side error" })
+        const newBookingRequest = req.body;
+        await client.db("Cookplato").collection("requestedBooking").insertOne(newBookingRequest);
+        res.status(201).json({ message: "Request for booking successful", newRequest: newBookingRequest });
+    } catch (error) {
+        console.log("Error adding booking request:", error);
+        res.status(500).json({ error: "There was a server side error" });
     }
-})
-// ==============================================================================
+});
 
-
-//  delete a booking request -----------------------------------------------------------------------------
+// Delete a booking request
 router.delete("/:id", async (req, res) => {
     try {
         const requestedBookingId = req.params.id;
-        const deletedRequest = await RequestedBookingCollections.findByIdAndDelete(requestedBookingId);
-        if (deletedRequest) {
-            res.status(200).json({ message: "booking request deleted successfully", deletedRequest })
+        const deletedRequest = await client.db("Cookplato").collection("requestedBooking").findOneAndDelete({ _id: ObjectId(requestedBookingId) });
+        if (deletedRequest.value) {
+            res.status(200).json({ message: "Booking request deleted successfully", deletedRequest });
         } else {
-            res.status(404).json({ error: "Booking request not found" })
+            res.status(404).json({ error: "Booking request not found" });
         }
-
     } catch (error) {
-        console.log("error while deleting booking request", error)
-        res.status(500).json({ error: "There was a server side error" })
+        console.log("Error while deleting booking request:", error);
+        res.status(500).json({ error: "There was a server side error" });
     }
-})
-// ========================================================================================================
+});
 
-module.exports= router;
+module.exports = router;
